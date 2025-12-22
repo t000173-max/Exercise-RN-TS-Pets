@@ -1,4 +1,13 @@
-const pets = [
+export type Pet = {
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  image: string;
+  image2: string;
+};
+
+const pets: Pet[] = [
     {
         id: 1,
         name: 'Cleocatra',

@@ -1,87 +1,59 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import React, { useState } from "react";
-import pets from "@/data/pets";
+import React, { useMemo, useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import type { Pet } from "../data/pets";
 import PetItem from "./PetItem";
+import PetsFilter from "./PetsFilter";
 
-const PetList = () => {
-  const petList = pets.map((pet) => <PetItem key={pet.id} pet={pet} />);
+type Props = {
+  pets: Pet[];
+};
+
+const PetsList = ({ pets }: Props) => {
+  const [query, setQuery] = useState("");
+  const [type, setType] = useState<"" | "cat" | "dog" | "rabbit">("");
+
+  // Optional debugging:
+  // console.log("query:", query);
+  // console.log("type:", type);
+
+  const filteredPets = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    return pets
+      .filter((pet) => pet.name.toLowerCase().includes(q)) // ✅ case-insensitive
+      .filter((pet) => {
+        if (type === "") return true;
+        // Handle case-insensitive comparison
+        return pet.type.toLowerCase() === type.toLowerCase();
+      });
+  }, [pets, query, type]);
+
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      style={styles.containerStyle}
-    >
-      {/* Search Input */}
-      <TextInput placeholder="Search for a pet" style={styles.searchInput} />
+    <View style={styles.container}>
+      <PetsFilter
+        query={query}
+        onChangeQuery={setQuery}
+        type={type}
+        onChangeType={setType}
+      />
 
-      {/* Filter by type */}
-      <ScrollView horizontal contentContainerStyle={styles.filterContainer}>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text>All</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text>Cat</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text>Dog</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text>Rabbit</Text>
-        </TouchableOpacity>
-      </ScrollView>
-
-      {/* Pet List */}
-      {petList}
-    </ScrollView>
+      <FlatList
+        data={filteredPets}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => <PetItem pet={item} />}
+        contentContainerStyle={styles.listContent}
+      />
+    </View>
   );
 };
 
-export default PetList;
+export default PetsList;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "center",
-    alignItems: "center",
+    flex: 1,
   },
-  containerStyle: {
-    backgroundColor: "#f9e3be",
-    paddingRight: 20,
-    paddingLeft: 20,
-    paddingBottom: 20,
-  },
-  searchInput: {
-    width: "100%",
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-    borderColor: "#000",
-  },
-  filterTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  filterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    marginBottom: 10,
-  },
-  filterButton: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    width: "20%",
-    justifyContent: "center",
-    alignItems: "center",
+  listContent: {
+    paddingBottom: 24,
   },
 });

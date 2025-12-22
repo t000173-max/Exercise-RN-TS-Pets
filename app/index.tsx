@@ -1,17 +1,18 @@
-import PetList from "@/components/PetList";
-import { View, StyleSheet } from "react-native";
+import { SafeAreaView, StyleSheet } from "react-native";
+import PetList from "../components/PetList";
+import pets from "../data/pets";
 
 export default function Index() {
   return (
-    <View style={styles.container}>
-      <PetList />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <PetList pets={pets} />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9e3be",
+    backgroundColor: "#fdeacc",
   },
 });
