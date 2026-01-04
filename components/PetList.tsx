@@ -4,6 +4,7 @@ import type { Pet } from "../data/pets";
 import PetItem from "./PetItem";
 import PetsFilter from "./PetsFilter";
 
+
 type Props = {
   pets: Pet[];
 };
